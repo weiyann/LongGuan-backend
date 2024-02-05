@@ -3,7 +3,7 @@ import express from "express";
 import cors from "cors";
 import upload from "./utils/upload-imgs.js"; // 上傳圖片
 import db from "./utils/connect-mysql.js"; // 資料庫
-import testRouter from "./routes/index.js"; // 引入路由
+import testRouter from "./routes/index.js"; // 引入自訂router
 
 //建立web server物件
 const app = express();
@@ -17,6 +17,19 @@ app.use(express.json());
 app.get("/", (req, res) => {
   res.send("<h2>abc</h2>");
 });
+
+// 獲得客人資料
+app.get("/guest-list", async (req, res) => {
+  const sql = `SELECT * FROM guest ORDER BY guest_id desc`;
+  const [rows] = await db.query(sql);
+  res.json(rows);
+});
+
+// 新增客人資料
+
+// 修改客人資料
+
+// 刪除客人資料
 
 app.use("/test", testRouter); // 當成 middleware 使用
 

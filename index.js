@@ -86,6 +86,39 @@ app.get("/guest-list", async (req, res) => {
 });
 
 // 新增客人資料
+app.post("/guest-add", async (req, res) => {
+  const output = {
+    success: false,
+    postData: req.body, // 除錯用
+  };
+  const {
+    guest_name,
+    national_id,
+    passport_id,
+    phone,
+    company_name,
+    compiled,
+  } = req.body;
+  const sql =
+    "INSERT INTO `guest`( `guest_name`, `national_id`, `passport_id`, `phone`, `company_name`, `compiled`, `created_at`) VALUES (?,?,?,?,?,?,NOW()) ";
+  try {
+    const [result] = await db.query(sql, [
+      guest_name,
+      national_id,
+      passport_id,
+      phone,
+      company_name,
+      compiled,
+    ]);
+    // 定義一個 output 的屬性 result 把 SQL查詢的值給他
+    output.result = result;
+    // 如果 affectedRows 是1就是true,0就是false
+    output.success = !!result.affectedRows;
+  } catch (ex) {
+    output.exception = ex;
+  }
+  res.json(output);
+});
 
 // 修改客人資料
 

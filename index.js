@@ -98,7 +98,7 @@ app.post("/guest-add", async (req, res) => {
     phone,
     company_name,
     compiled,
-  } = req.body;
+  } = req.body.guestAdd;
   const sql =
     "INSERT INTO `guest`( `guest_name`, `national_id`, `passport_id`, `phone`, `company_name`, `compiled`, `created_at`) VALUES (?,?,?,?,?,?,NOW()) ";
   try {

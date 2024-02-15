@@ -121,6 +121,50 @@ app.post("/guest-add", async (req, res) => {
 });
 
 // 修改客人資料
+app.get("/guest-edit/:gid", async (req, res) => {
+  const gid = +req.params.gid;
+
+  const sql = `SELECT * FROM guest where guest_id = ?`;
+  const [rows] = await db.query(sql, [gid]);
+  if (!rows.length) {
+    return res.json({ success: false });
+  }
+  const row = rows[0];
+  res.json({ success: true, row });
+});
+
+// 修改客人資料的api
+app.put("/api/guest-edit/:gid", async (req, res) => {
+  const gid = +req.params.gid;
+  const output = {
+    success: false,
+    postData: req.body,
+    result: null,
+  };
+  const {
+    guest_name,
+    national_id,
+    passport_id,
+    phone,
+    company_name,
+    compiled,
+  } = req.body;
+
+  const sql =
+    "UPDATE `guest` SET `guest_name`=?,`national_id`=?,`passport_id`=?,`phone`=?,`company_name`=?,`compiled`=? WHERE guest_id = ?";
+  const [result] = await db.query(sql, [
+    guest_name,
+    national_id,
+    passport_id,
+    phone,
+    company_name,
+    compiled,
+    gid,
+  ]);
+  output.result = result;
+  output.success = !!result.changedRows;
+  res.json(output);
+});
 
 // 刪除客人資料
 

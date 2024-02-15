@@ -4,6 +4,8 @@ import cors from "cors";
 import upload from "./utils/upload-imgs.js"; // 上傳圖片
 import db from "./utils/connect-mysql.js"; // 資料庫
 import testRouter from "./routes/index.js"; // 引入自訂router
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 
 //建立web server物件
 const app = express();
@@ -184,6 +186,42 @@ app.delete("/guest-delete/:gid", async (req, res) => {
 });
 
 app.use("/test", testRouter); // 當成 middleware 使用
+
+// 登入功能
+app.post("/api/login", async (req, res) => {
+  const output = {
+    success: false,
+    code: 0,
+    guest_id: 0,
+    postData: req.body,
+    token: "",
+  };
+  if (!req.body.account || !req.body.password) {
+    // 資料不足
+    output.code = 410;
+    return res.json(output);
+  }
+  const sql = "SELECT * FROM staff WHERE account=?";
+  const [rows] = await db.query(sql, [req.body.account]);
+  if (!rows.length) {
+    // 帳號是錯的
+    output.code = 400;
+    return res.json(output);
+  }
+  const row = rows[0];
+  const pass = await bcrypt.compare(req.body.password, row.password);
+  if (!pass) {
+    // 密碼是錯的
+    output.code = 420;
+    return res.json(output);
+  }
+  output.code = 200;
+  output.success = true;
+  output.guest_id = row.guest_id;
+  output.token = jwt.sign({ guest_id: row.guest_id }, process.env.JWT_SECRET);
+
+  res.json(output);
+});
 
 // 上傳圖片的路由
 // 加入 middleware upload.single()

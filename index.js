@@ -167,6 +167,21 @@ app.put("/api/guest-edit/:gid", async (req, res) => {
 });
 
 // 刪除客人資料
+app.delete("/guest-delete/:gid", async (req, res) => {
+  const gid = +req.params.gid;
+  const output = {
+    success: false,
+    result: null,
+  };
+  if (!gid || gid < 1) {
+    return res.json(output);
+  }
+  const sql = `DELETE FROM guest where guest_id = ${gid}`;
+  const [result] = await db.query(sql);
+  output.result = result;
+  output.success = !!result.affectedRows;
+  res.json(output);
+});
 
 app.use("/test", testRouter); // 當成 middleware 使用
 

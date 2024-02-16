@@ -193,23 +193,23 @@ app.post("/api/login", async (req, res) => {
     success: false,
     code: 0,
     guest_id: 0,
-    postData: req.body,
+    postData: req.body.loginData,
     token: "",
   };
-  if (!req.body.account || !req.body.password) {
+  if (!req.body.loginData.account || !req.body.loginData.password) {
     // 資料不足
     output.code = 410;
     return res.json(output);
   }
   const sql = "SELECT * FROM staff WHERE account=?";
-  const [rows] = await db.query(sql, [req.body.account]);
+  const [rows] = await db.query(sql, [req.body.loginData.account]);
   if (!rows.length) {
     // 帳號是錯的
     output.code = 400;
     return res.json(output);
   }
   const row = rows[0];
-  const pass = await bcrypt.compare(req.body.password, row.password);
+  const pass = await bcrypt.compare(req.body.loginData.password, row.password);
   if (!pass) {
     // 密碼是錯的
     output.code = 420;
@@ -218,6 +218,7 @@ app.post("/api/login", async (req, res) => {
   output.code = 200;
   output.success = true;
   output.guest_id = row.guest_id;
+  output.guest_name = row.staff_name;
   output.token = jwt.sign({ guest_id: row.guest_id }, process.env.JWT_SECRET);
 
   res.json(output);

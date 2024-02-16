@@ -1,7 +1,7 @@
 # LongGuan-backend
 
 這是一個基於 Vue 3、Express 和 MySQL 構建的管理系統，用於實現客戶數據的 CRUD 操作，並包含了用戶登錄功能和身份驗證。
-[後端連結](https://github.com/weiyann/LongGuan-frontend)
+[前端連結](https://github.com/weiyann/LongGuan-frontend)
 
 ## 功能特點
 
